@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+
+<style type="text/css">
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+
+body {
+display: flex;
+justify-content: center;
+align-items: center;
+min-height:100vh;
+width:100%;
+background:#ffe137;
+}
+
+form {
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: column;
+}
+
+input {
+caret-color: orange;
+padding:16px;
+border:0;
+outline:0;
+border-radius: 50px;
+background: #ffd700;
+box-shadow:  20px 20px 60px #d9b700,
+             -20px -20px 60px #fff700;
+}
+
+ul{
+position:relative;
+margin-top:24px;
+width:75%;
+max-height:300px;
+overflow:scroll;
+}
+
+li{
+text-align:center;
+margin:8px;
+}
+
+.hl{
+background:yellow;
+}
+
+</style>
+
+</head>
+<body>
+
+<form>
+<input type="text" placeholder="city name" id="search">
+
+<ul id="suggestions">
+<li>Cities or States</li>
+</ul>
+
+</form>
+
+<script type="text/javascript">
+var cities=[];
+const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+fetch (endpoint).then(blob=>blob.json()).then(data=>cities=data);
+
+function findMatches(search, citylist){
+
+var Reg= new RegExp(search, 'gi');
+return cities.filter(
+
+place=>{
+return place.city.match(Reg) || place.state.match(Reg);
+}
+);
+}
+
+function numberWithCommas(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+}
+
+function display (){
+var matches=findMatches(this.value, cities);
+const html=matches.map(
+place=>{
+var regex=new RegExp(this.value,"gi");
+var cityName=place.city.replace(regex, `<span class='hl'>${this.value}</span>`);
+var stateName=place.city.replace(regex, `<span class='hl'>${this.value}</span>`)
+
+return `<li><span>${cityName} , ${stateName}</span>
+<span>${numberWithCommas(place.population)}</span></li>`;
+
+}
+).join("");
+suggestions.innerHTML=html;
+}
+
+var input=document.querySelector("#search");
+var suggestions=document.querySelector("#suggestions");
+input.addEventListener("change",display);
+input.addEventListener("keyup",display);
+
+</script>
+
+</body>
+</html>
